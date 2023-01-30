@@ -1,7 +1,7 @@
 'use strict'
 const { Model } = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
-  class Installment extends Model {
+  class Invoice extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,34 +9,52 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate (models) {
       // define association here
-      Installment.hasMany(models.Invoice, {
-        foreignKey: 'installment_id'
-      })
     }
   }
-  Installment.init(
+  Invoice.init(
     {
       user_id: DataTypes.INTEGER,
-      name: {
+      installment_id: DataTypes.INTEGER,
+      car_id: DataTypes.INTEGER,
+      leasing_id: DataTypes.INTEGER,
+      invoice_number: {
         type: DataTypes.STRING,
         validate: {
           notEmpty: true
         }
       },
-      leasing_id: {
+      customer_number: {
+        type: DataTypes.STRING,
+        validate: {
+          notEmpty: true
+        }
+      },
+      customer_name: {
+        type: DataTypes.STRING,
+        validate: {
+          notEmpty: true
+        }
+      },
+      leasing_name: {
+        type: DataTypes.STRING,
+        validate: {
+          notEmpty: true
+        }
+      },
+      amount_per_month: {
         type: DataTypes.INTEGER,
         validate: {
           notEmpty: true
         }
       },
-      car_id: {
+      term: {
         type: DataTypes.INTEGER,
         validate: {
           notEmpty: true
         }
       },
-      offer_terms: {
-        type: DataTypes.INTEGER,
+      status: {
+        type: DataTypes.STRING,
         validate: {
           notEmpty: true
         }
@@ -44,8 +62,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Installment'
+      modelName: 'Invoice'
     }
   )
-  return Installment
+  return Invoice
 }
