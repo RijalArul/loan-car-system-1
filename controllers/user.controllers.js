@@ -1,10 +1,11 @@
-const { User } = require('../models')
+const { User, Deposite, sequelize } = require('../models')
 class UserController {
   static async login (req, res) {
+    const t = await sequelize.transaction()
     try {
       const { username } = req.body
 
-      const user = await User.findOrCreate({
+      await User.findOrCreate({
         where: {
           username: username
         },
@@ -14,8 +15,13 @@ class UserController {
         }
       })
 
+      const updateLogin = await User.update(
+        { is_login: true },
+        { where: { username: username }, returning: true }
+      )
+
       res.status(201).json({
-        data: user,
+        data: updateLogin[1][0],
         message: 'Success User Login'
       })
     } catch (err) {
@@ -69,10 +75,41 @@ class UserController {
   }
 
   static async deposite (req, res) {
+    const t = await sequelize.transaction()
+
     try {
-      console.log('MASUK')
+      const { user_id } = req.headers
+      const { balance } = req.body
+
+      const update_balance = await User.update(
+        { balance: balance },
+        {
+          where: {
+            id: user_id
+          },
+          returning: true
+        },
+        { transaction: t }
+      )
+
+      await Deposite.create({
+        user_id: user_id
+      })
+
+      await t.commit()
+
+      res.status(201).json({
+        data: update_balance[1][0],
+        message: 'Success Update Deposite Balance'
+      })
     } catch (err) {
-      console.log(err)
+      if (t) {
+        await t.rollback()
+        res.status(400).json({
+          err: err,
+          message: 'Failed Update Deposite Balance'
+        })
+      }
     }
   }
 }

@@ -9,7 +9,7 @@ async function AuthMidleware (req, res, next) {
       }
     })
 
-    if (user) {
+    if (user && user.is_login === true) {
       next()
     } else {
       throw new Error('User_Unauthorized')
