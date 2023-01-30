@@ -67,6 +67,14 @@ class UserController {
       }
     }
   }
+
+  static async deposite (req, res) {
+    try {
+      console.log('MASUK')
+    } catch (err) {
+      console.log(err)
+    }
+  }
 }
 
 module.exports = UserController
