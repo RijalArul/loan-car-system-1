@@ -5,26 +5,33 @@ class UserController {
     try {
       const { username } = req.body
 
-      await User.findOrCreate({
+      const user = await User.findOrCreate({
         where: {
           username: username
         },
         defaults: {
-          username: username,
           is_login: true
-        }
+        },
+        transaction: t
       })
 
       const updateLogin = await User.update(
         { is_login: true },
-        { where: { username: username }, returning: true }
+        { where: { username: user[0].username }, returning: true },
+        {
+          transaction: t
+        }
       )
+
+      await t.commit()
 
       res.status(201).json({
         data: updateLogin[1][0],
         message: 'Success User Login'
       })
     } catch (err) {
+      console.log(err)
+      await t.rollback()
       res.status(500).json({
         err: err,
         message: 'Internal Server Error'
