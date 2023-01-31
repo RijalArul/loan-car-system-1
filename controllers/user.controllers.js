@@ -30,21 +30,17 @@ class UserController {
         message: 'Success User Login'
       })
     } catch (err) {
-      console.log(err)
       await t.rollback()
-      res.status(500).json({
-        err: err,
-        message: 'Internal Server Error'
-      })
+      next(err)
     }
   }
 
   static async logout (req, res) {
     try {
-      const { id } = req.params
+      const { user_id } = req.headers
       const user = await User.findOne({
         where: {
-          id: id
+          id: user_id
         }
       })
 
@@ -60,24 +56,25 @@ class UserController {
         )
 
         res.status(200).json({
-          message: 'Lgout Success',
+          message: `Thank You, ${user.username}`,
           data: logout_user
         })
       } else {
-        throw new Error('Failed Logout / Invalid User')
+        throw new Error('Invalid User')
       }
     } catch (err) {
-      if (err.message === 'Failed Logout / Invalid User') {
-        res.status(404).json({
-          err: 'Users Not Found',
-          message: 'Failed Logout'
-        })
-      } else {
-        res.status(500).json({
-          err: err,
-          message: 'Internal Server Error'
-        })
-      }
+      next(err)
+      // if (err.message === 'Invalid User') {
+      //   res.status(404).json({
+      //     err: 'Users Not Found',
+      //     message: 'Failed Logout'
+      //   })
+      // } else {
+      //   res.status(500).json({
+      //     err: err,
+      //     message: 'Internal Server Error'
+      //   })
+      // }
     }
   }
 

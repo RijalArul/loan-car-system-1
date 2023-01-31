@@ -9,23 +9,13 @@ async function AuthMidleware (req, res, next) {
       }
     })
 
-    if (user && user.is_login === true) {
+    if (user.id === user_id || user.is_login === true) {
       next()
     } else {
-      throw new Error('Authenthication_Failed')
+      throw new Error('Failed Authenthicated')
     }
   } catch (err) {
-    if (err.message === 'Authenthication_Failed') {
-      res.status(401).json({
-        err: err.message,
-        message: err.message
-      })
-    } else {
-      res.status(500).json({
-        err: err,
-        message: 'Internal Server Error'
-      })
-    }
+    next(err)
   }
 }
 
@@ -42,10 +32,10 @@ async function AuthorizedInstallment (req, res, next) {
     if (my_installment) {
       next()
     } else {
-      throw new Error('Unauthorized')
+      throw new Error('Forbidden Access')
     }
   } catch (err) {
-    if (err.message === 'Unauthorized') {
+    if (err.message === 'Forbidden Access') {
       res.status(401).json({
         err: err.message,
         message: err.message
