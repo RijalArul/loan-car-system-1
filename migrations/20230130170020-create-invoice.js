@@ -77,6 +77,14 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
+      invoice_date: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      invoice_due_date: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

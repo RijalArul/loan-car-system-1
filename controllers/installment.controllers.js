@@ -48,6 +48,8 @@ class InstallmentController {
           const monthlyInstallments = car.price / offer_terms
           const ratesPerMonth = (monthlyInstallments * leasing.rates) / 100 / 12
           const amountInstallmentPerMonth = monthlyInstallments + ratesPerMonth
+          const d = new Date()
+          //   console.log(d.setMinutes(d.getMinutes() + 5))
           let payloadInvoice = {
             user_id,
             installment_id: installment.id,
@@ -59,7 +61,9 @@ class InstallmentController {
             leasing_name: leasing.leasing_name,
             amount_per_month: amountInstallmentPerMonth,
             term: 0,
-            status: 'OWE'
+            status: 'OWE',
+            invoice_date: new Date(),
+            invoice_due_date: d.setMinutes(d.getMinutes() + 5)
           }
 
           let arrInvoice = []
@@ -91,6 +95,7 @@ class InstallmentController {
         'Leasing_Car_Not_Found' ||
         'Offer_Terms_Over_Then_Leasing_Terms_Offer'
       ) {
+        console.log('>>>>>>>>>>>>>>>', err)
         let message = err.errors?.map(el => {
           return el.message
         })
