@@ -63,35 +63,34 @@ class InstallmentController {
             term: 0,
             status: 'WAITING',
             invoice_date: new Date(),
-            invoice_due_date: d.setMinutes(d.getMinutes() + 1)
+            invoice_due_date: d.setDate(d.getDate() + 30)
           }
-
           let arrInvoice = []
           for (let i = 1; i <= offer_terms; i++) {
             /* SPACE 30 DATE */
-            // let spaceDueDate = 0
-            // spaceDueDate += 30
-            // payloadInvoice.invoice_number = 'INV000' + i
-            //payloadInvoice.term = i
-            // payloadInvoice.invoice_date = d.setDate(
-            //   d.getDate() + spaceDueDate - 30
-            // )
-            // payloadInvoice.invoice_due_date = d.setDate(
-            //   d.getDate() + spaceDueDate
-            // )
-
-            /* SPACE 5 Minutes */
-            let spaceDueMinute = 0
-            spaceDueMinute += 5
-            payloadInvoice.term = i
+            let spaceDueDate = 0
+            spaceDueDate += 30
             payloadInvoice.invoice_number = 'INV000' + i
             payloadInvoice.term = i
-            payloadInvoice.invoice_date = d.setMinutes(
-              d.getMinutes() + spaceDueMinute - 5
+            payloadInvoice.invoice_date = d.setDate(
+              d.getDate() + spaceDueDate - 30
             )
-            payloadInvoice.invoice_due_date = d.setMinutes(
-              d.getMinutes() + spaceDueMinute
+            payloadInvoice.invoice_due_date = d.setDate(
+              d.getDate() + spaceDueDate
             )
+
+            /* SPACE 5 Minutes */
+            // let spaceDueMinute = 0
+            // spaceDueMinute += 5
+            // payloadInvoice.term = i
+            // payloadInvoice.invoice_number = 'INV000' + i
+            // payloadInvoice.term = i
+            // payloadInvoice.invoice_date = d.setMinutes(
+            //   d.getMinutes() + spaceDueMinute - 5
+            // )
+            // payloadInvoice.invoice_due_date = d.setMinutes(
+            //   d.getMinutes() + spaceDueMinute
+            // )
 
             arrInvoice.push(payloadInvoice)
             let newInvoice = [...new Set(arrInvoice)]
@@ -112,12 +111,14 @@ class InstallmentController {
       }
     } catch (err) {
       await t.rollback()
+
       if (
         err.name === 'SequelizeValidationError' ||
         'SequelizeUniqueConstraintError' ||
         err.message === 'Leasing_Car_Not_Found' ||
         'Offer_Terms_Over_Then_Leasing_Terms_Offer'
       ) {
+        console.log(err)
         let message = err.errors?.map(el => {
           return el.message
         })
