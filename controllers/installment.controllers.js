@@ -68,8 +68,31 @@ class InstallmentController {
 
           let arrInvoice = []
           for (let i = 1; i <= offer_terms; i++) {
+            /* SPACE 30 DATE */
+            // let spaceDueDate = 0
+            // spaceDueDate += 30
+            // payloadInvoice.invoice_number = 'INV000' + i
+            //payloadInvoice.term = i
+            // payloadInvoice.invoice_date = d.setDate(
+            //   d.getDate() + spaceDueDate - 30
+            // )
+            // payloadInvoice.invoice_due_date = d.setDate(
+            //   d.getDate() + spaceDueDate
+            // )
+
+            /* SPACE 5 Minutes */
+            let spaceDueMinute = 0
+            spaceDueMinute += 5
+            payloadInvoice.term = i
             payloadInvoice.invoice_number = 'INV000' + i
             payloadInvoice.term = i
+            payloadInvoice.invoice_date = d.setMinutes(
+              d.getMinutes() + spaceDueMinute - 5
+            )
+            payloadInvoice.invoice_due_date = d.setMinutes(
+              d.getMinutes() + spaceDueMinute
+            )
+
             arrInvoice.push(payloadInvoice)
             let newInvoice = [...new Set(arrInvoice)]
             await Invoice.bulkCreate(newInvoice, { transaction: t })
