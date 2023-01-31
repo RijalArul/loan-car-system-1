@@ -61,7 +61,7 @@ class InstallmentController {
             leasing_name: leasing.leasing_name,
             amount_per_month: amountInstallmentPerMonth,
             term: 0,
-            status: 'OWE',
+            status: 'WAITING',
             invoice_date: new Date(),
             invoice_due_date: d.setMinutes(d.getMinutes() + 5)
           }
@@ -115,10 +115,9 @@ class InstallmentController {
       if (
         err.name === 'SequelizeValidationError' ||
         'SequelizeUniqueConstraintError' ||
-        'Leasing_Car_Not_Found' ||
+        err.message === 'Leasing_Car_Not_Found' ||
         'Offer_Terms_Over_Then_Leasing_Terms_Offer'
       ) {
-        console.log('>>>>>>>>>>>>>>>', err)
         let message = err.errors?.map(el => {
           return el.message
         })

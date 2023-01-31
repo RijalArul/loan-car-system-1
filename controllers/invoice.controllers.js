@@ -1,5 +1,5 @@
 class InvoiceController {
-  static async create (req, res) {
+  static async findAll (req, res) {
     try {
     } catch (err) {
       console.log(err)

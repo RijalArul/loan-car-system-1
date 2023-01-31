@@ -1,4 +1,4 @@
-const { User, Installment } = require('../models')
+const { User, Installment, Invoice } = require('../models')
 async function AuthMidleware (req, res, next) {
   const { user_id } = req.headers
 
@@ -59,7 +59,38 @@ async function AuthorizedInstallment (req, res, next) {
   }
 }
 
+async function AuthorizedInvoice (req, res, next) {
+  try {
+    const { user_id } = req.headers
+
+    const my_invoice = await Invoice.findOne({
+      where: {
+        user_id: user_id
+      }
+    })
+
+    if (my_invoice) {
+      next()
+    } else {
+      throw new Error('Unauthorized')
+    }
+  } catch (err) {
+    if (err.message === 'Unauthorized') {
+      res.status(401).json({
+        err: err.message,
+        message: err.message
+      })
+    } else {
+      res.status(500).json({
+        err: err,
+        message: 'Internal Server Error'
+      })
+    }
+  }
+}
+
 module.exports = {
   AuthMidleware,
-  AuthorizedInstallment
+  AuthorizedInstallment,
+  AuthorizedInvoice
 }

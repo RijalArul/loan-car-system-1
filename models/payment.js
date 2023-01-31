@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+'use strict'
+const { Model } = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
   class Payment extends Model {
     /**
@@ -9,19 +7,37 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
+    static associate (models) {
       // define association here
     }
   }
-  Payment.init({
-    invoice_id: DataTypes.INTEGER,
-    user_id: DataTypes.INTEGER,
-    bill_amount: DataTypes.INTEGER,
-    pay_total: DataTypes.INTEGER,
-    remain_payment: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'Payment',
-  });
-  return Payment;
-};
+  Payment.init(
+    {
+      invoice_id: DataTypes.INTEGER,
+      user_id: DataTypes.INTEGER,
+      bill_amount: {
+        type: DataTypes.INTEGER,
+        validate: {
+          notEmpty: true
+        }
+      },
+      pay_total: {
+        type: DataTypes.INTEGER,
+        validate: {
+          notEmpty: true
+        }
+      },
+      remain_payment: {
+        type: DataTypes.INTEGER,
+        validate: {
+          notEmpty: true
+        }
+      }
+    },
+    {
+      sequelize,
+      modelName: 'Payment'
+    }
+  )
+  return Payment
+}
