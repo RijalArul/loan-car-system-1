@@ -10,6 +10,12 @@ function errorHandler (err, req, res, next) {
       return el.message
     })
   } else if (
+    err.message === 'Leasing_Car_Not_Found' ||
+    'Offer_Terms_Over_Then_Leasing_Terms_Offer'
+  ) {
+    code = 400
+    message = err.message
+  } else if (
     err.message === 'Invalid Username' ||
     err.message === 'Failed Authenthicated'
   ) {
@@ -18,9 +24,9 @@ function errorHandler (err, req, res, next) {
   } else if (err.name === 'Forbidden Access') {
     code = 403
     message = 'Forbidden Access'
-  } else if (err.name === 'ID Not Found') {
+  } else if (err.message === 'Installment Not Found') {
     code = 404
-    message = err.name
+    message = err.message
   } else if (err.name === 'UserNotFound') {
     code = 404
     message = err.name
