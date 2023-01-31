@@ -1,3 +1,4 @@
+const successHandler = require('../helpers/succes-handler')
 const { User, Deposite, sequelize } = require('../models')
 class UserController {
   static async login (req, res) {
@@ -25,10 +26,7 @@ class UserController {
 
       await t.commit()
 
-      res.status(201).json({
-        data: updateLogin[1][0],
-        message: 'Success User Login'
-      })
+      successHandler(res, 201, updateLogin[1][0], 'Success Login')
     } catch (err) {
       await t.rollback()
       next(err)
@@ -55,26 +53,12 @@ class UserController {
           }
         )
 
-        res.status(200).json({
-          message: `Thank You, ${user.username}`,
-          data: logout_user
-        })
+        successHandler(res, 200, logout_user, `Thank you, ${user.username}`)
       } else {
         throw new Error('Invalid User')
       }
     } catch (err) {
       next(err)
-      // if (err.message === 'Invalid User') {
-      //   res.status(404).json({
-      //     err: 'Users Not Found',
-      //     message: 'Failed Logout'
-      //   })
-      // } else {
-      //   res.status(500).json({
-      //     err: err,
-      //     message: 'Internal Server Error'
-      //   })
-      // }
     }
   }
 
@@ -96,16 +80,29 @@ class UserController {
         { transaction: t }
       )
 
-      await Deposite.create({
-        user_id: user_id
+      const deposite = await Deposite.findOne({
+        where: {
+          user_id: user_id
+        }
       })
+
+      if (!deposite) {
+        await Deposite.create(
+          {
+            user_id: user_id
+          },
+          { transaction: t }
+        )
+      }
 
       await t.commit()
 
-      res.status(201).json({
-        data: update_balance[1][0],
-        message: 'Success Update Deposite Balance'
-      })
+      successHandler(
+        res,
+        201,
+        update_balance[1][0],
+        'Success Update Deposite Balance'
+      )
     } catch (err) {
       if (t) {
         await t.rollback()

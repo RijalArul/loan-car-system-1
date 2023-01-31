@@ -1,14 +1,23 @@
-const { User, Installment, Leasing, Car } = require('../models')
+const {
+  User,
+  Installment,
+  Leasing,
+  Car,
+  Invoice,
+  Payment
+} = require('../models')
 class IndexRepository {
   #user
   #installment
   #leasing
   #car
+  #invoice
   constructor () {
     this.#user = User
     this.#installment = Installment
     this.#leasing = Leasing
     this.#car = Car
+    this.#invoice = Invoice
   }
 
   async getUser (id) {
@@ -58,6 +67,28 @@ class IndexRepository {
     })
 
     return car
+  }
+
+  async getAllMyInvoices (user_id) {
+    const invoices = await this.#invoice.findAll({
+      where: {
+        user_id: user_id
+      },
+      include: [Payment]
+    })
+
+    return invoices
+  }
+
+  async getDetailMyInvoice (id) {
+    const invoice = await this.#invoice.findOne({
+      where: {
+        id: id
+      },
+      include: [Payment]
+    })
+
+    return invoice
   }
 }
 

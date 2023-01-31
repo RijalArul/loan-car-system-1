@@ -1,18 +1,16 @@
+const successHandler = require('../helpers/succes-handler')
 const { Invoice, Payment, User, sequelize } = require('../models')
+const IndexRepository = require('../repositories/index.repositories')
 
+const repository = new IndexRepository()
 class PaymentController {
-  static async create (req, res) {
+  static async create (req, res, next) {
     const t = await sequelize.transaction()
     try {
-      const { user_id } = req.headers
       const { invoice_id } = req.params
       const { transfer } = req.body
 
-      const my_invoice = await Invoice.findOne({
-        where: {
-          id: invoice_id
-        }
-      })
+      const my_invoice = await repository.getDetailMyInvoice(invoice_id)
 
       if (my_invoice.status === 'WAITING') {
         const paymentDate = new Date()
@@ -101,10 +99,7 @@ class PaymentController {
 
             await t.commit()
 
-            res.status(201).json({
-              data: newPayment,
-              message: 'Payment Is Success'
-            })
+            successHandler(res, 201, newPayment, 'Your Payment Is Success')
           }
         } else {
           throw new Error('Invalid_Payment_Date')
@@ -112,26 +107,7 @@ class PaymentController {
       }
     } catch (err) {
       await t.rollback()
-      if (
-        err.name === 'SequelizeValidationError' ||
-        'SequelizeUniqueConstraintError' ||
-        err.message === 'Invalid_Payment_Date'
-      ) {
-        let message = err.errors?.map(el => {
-          return el.message
-        })
-        res.status(400).json({
-          err:
-            err.message === 'Invalid_Payment_Date'
-              ? 'Your Invoice has been expired'
-              : message[0]
-        })
-      } else {
-        res.status(500).json({
-          err: err,
-          message: 'Internal Server Error'
-        })
-      }
+      next(err)
     }
   }
 }

@@ -11,7 +11,9 @@ function errorHandler (err, req, res, next) {
     })
   } else if (
     err.message === 'Leasing_Car_Not_Found' ||
-    'Offer_Terms_Over_Then_Leasing_Terms_Offer'
+    'Offer_Terms_Over_Then_Leasing_Terms_Offer' ||
+    'Create_Invoice_Please' ||
+    'Invalid_Payment_Date'
   ) {
     code = 400
     message = err.message
@@ -21,7 +23,7 @@ function errorHandler (err, req, res, next) {
   ) {
     code = 401
     message = err.message
-  } else if (err.name === 'Forbidden Access') {
+  } else if (err.message === 'Forbidden Access') {
     code = 403
     message = 'Forbidden Access'
   } else if (err.message === 'Installment Not Found') {

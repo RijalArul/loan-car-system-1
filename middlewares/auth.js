@@ -35,17 +35,7 @@ async function AuthorizedInstallment (req, res, next) {
       throw new Error('Forbidden Access')
     }
   } catch (err) {
-    if (err.message === 'Forbidden Access') {
-      res.status(401).json({
-        err: err.message,
-        message: err.message
-      })
-    } else {
-      res.status(500).json({
-        err: err,
-        message: 'Internal Server Error'
-      })
-    }
+    next(err)
   }
 }
 
@@ -62,20 +52,10 @@ async function AuthorizedInvoice (req, res, next) {
     if (my_invoice) {
       next()
     } else {
-      throw new Error('Unauthorized')
+      throw new Error('Forbidden Access')
     }
   } catch (err) {
-    if (err.message === 'Unauthorized') {
-      res.status(401).json({
-        err: err.message,
-        message: err.message
-      })
-    } else {
-      res.status(500).json({
-        err: err,
-        message: 'Internal Server Error'
-      })
-    }
+    next(err)
   }
 }
 

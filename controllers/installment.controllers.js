@@ -1,4 +1,5 @@
 const interestRate = require('../helpers/interest-rate.helpers')
+const successHandler = require('../helpers/succes-handler')
 const {
   Installment,
   Leasing,
@@ -88,10 +89,7 @@ class InstallmentController {
 
           await t.commit()
 
-          res.status(201).json({
-            data: installment,
-            message: 'Success Created Your Installment'
-          })
+          successHandler(res, 201, installment, message)
         } else {
           throw new Error('Offer_Terms_Over_Then_Leasing_Terms_Offer')
         }
@@ -101,30 +99,6 @@ class InstallmentController {
     } catch (err) {
       await t.rollback()
       next(err)
-
-      // if (
-      //   err.name === 'SequelizeValidationError' ||
-      //   'SequelizeUniqueConstraintError' ||
-      //   err.message === 'Leasing_Car_Not_Found' ||
-      //   'Offer_Terms_Over_Then_Leasing_Terms_Offer'
-      // ) {
-      //   let message = err.errors?.map(el => {
-      //     return el.message
-      //   })
-      //   res.status(400).json({
-      //     err:
-      //       err.message === 'Leasing_Car_Not_Found'
-      //         ? 'Leasing Car is Invalid Request'
-      //         : err.message === 'Offer_Terms_Over_Then_Leasing_Terms_Offer'
-      //         ? 'Offer Terms Over Then Leasing Terms Offer'
-      //         : message[0]
-      //   })
-      // } else {
-      //   res.status(500).json({
-      //     err: err,
-      //     message: 'Internal Server Error'
-      //   })
-      // }
     }
   }
 
@@ -132,10 +106,7 @@ class InstallmentController {
     try {
       const { user_id } = req.headers
       const installments = await repository.getAllMyInstallment(user_id)
-      res.status(200).json({
-        data: installments,
-        message: 'Find Installments Success'
-      })
+      successHandler(res, 200, installments, 'Find Installments Success')
     } catch (err) {
       next(err)
     }
@@ -144,17 +115,9 @@ class InstallmentController {
   static async findOne (req, res, next) {
     try {
       const { id } = req.params
-      const installment = await Installment.findOne({
-        where: {
-          id: id
-        }
-      })
-
+      const installment = await repository.getMyInstallment(id)
       if (installment) {
-        res.status(200).json({
-          data: installment,
-          message: 'Find Installment Success'
-        })
+        successHandler(res, 200, installment, 'Success Get My Installment')
       } else {
         throw new Error('Installment Not Found')
       }
