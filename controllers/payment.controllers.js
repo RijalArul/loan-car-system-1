@@ -14,7 +14,7 @@ class PaymentController {
         }
       })
 
-      if (my_invoice) {
+      if (my_invoice.status === 'WAITING') {
         const paymentDate = new Date()
         if (
           paymentDate >= my_invoice.invoice_date &&
@@ -51,6 +51,9 @@ class PaymentController {
                   where: {
                     id: my_invoice.id
                   }
+                },
+                {
+                  transaction: t
                 }
               )
               await Invoice.update(
@@ -66,6 +69,34 @@ class PaymentController {
                 },
                 { transaction: t }
               )
+
+              const invoices = await Invoice.findAll(
+                {
+                  where: {
+                    installment_id: my_invoice.installment_id
+                  }
+                },
+                {
+                  transaction: t
+                }
+              )
+
+              if (invoices[invoices.length - 1].id === my_invoice.id) {
+                await Invoice.update(
+                  {
+                    amount_per_month: newPayment.remain_payment,
+                    status: 'OWE'
+                  },
+                  {
+                    where: {
+                      id: my_invoice.id
+                    }
+                  },
+                  {
+                    transaction: t
+                  }
+                )
+              }
             }
 
             await t.commit()

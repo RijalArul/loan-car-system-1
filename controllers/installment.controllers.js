@@ -63,7 +63,7 @@ class InstallmentController {
             term: 0,
             status: 'WAITING',
             invoice_date: new Date(),
-            invoice_due_date: d.setMinutes(d.getMinutes() + 5)
+            invoice_due_date: d.setMinutes(d.getMinutes() + 1)
           }
 
           let arrInvoice = []
