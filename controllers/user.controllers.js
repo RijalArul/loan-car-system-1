@@ -1,7 +1,7 @@
 const successHandler = require('../helpers/succes-handler')
 const { User, Deposite, sequelize } = require('../models')
 class UserController {
-  static async login (req, res) {
+  static async login (req, res, next) {
     const t = await sequelize.transaction()
     try {
       const { username } = req.body
@@ -33,7 +33,7 @@ class UserController {
     }
   }
 
-  static async logout (req, res) {
+  static async logout (req, res, next) {
     try {
       const { user_id } = req.headers
       const user = await User.findOne({
@@ -42,7 +42,7 @@ class UserController {
         }
       })
 
-      if (user) {
+      if (user.is_login === true) {
         const logout_user = await user.update(
           { is_login: false },
           {
@@ -53,7 +53,12 @@ class UserController {
           }
         )
 
-        successHandler(res, 200, logout_user, `Thank you, ${user.username}`)
+        successHandler(
+          res,
+          200,
+          logout_user,
+          `Thank you, ${logout_user.username}`
+        )
       } else {
         throw new Error('Invalid User')
       }
@@ -62,7 +67,7 @@ class UserController {
     }
   }
 
-  static async deposite (req, res) {
+  static async deposite (req, res, next) {
     const t = await sequelize.transaction()
 
     try {

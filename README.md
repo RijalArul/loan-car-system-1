@@ -11,4 +11,4 @@
 - create database first in Postgres
 - npx sequelize-cli db:migrate
 
-## 
+## List Endpoint & Explanation
