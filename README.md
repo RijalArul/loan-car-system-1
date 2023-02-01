@@ -12,3 +12,17 @@
 - npx sequelize-cli db:migrate
 
 ## List Endpoint & Explanation
+
+### Endpint Login
+- Desc:
+
+Endpoint that users can be login, that user just input the username
+
+- URL:
+
+http://localhost:3000/users/login
+
+- Body:
+  
+username: string
+
